@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ThreeSphere from "./components/ThreeSphere.vue";
+import ThreePhone from "./components/ThreePhone.vue";
 </script>
 
 <template>
-  <ThreeSphere></ThreeSphere>
+  <ThreePhone></ThreePhone>
 </template>
 
 <style scoped></style>
