@@ -3,25 +3,24 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Ref, computed, onMounted, ref, watch } from "vue";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import model from "../assets/lowpolygirl.glb?url";
+import model from "../assets/aurora.glb?url";
 import { lerp } from "three/src/math/MathUtils";
-import Stats from "three/examples/jsm/libs/stats.module";
 
 let iphone: THREE.Object3D;
 const size = 10;
 const divisions = 10;
 
-const gridHelper = new THREE.GridHelper(size, divisions);
+let position: THREE.Vector3 = new THREE.Vector3();
 
 const loader = new GLTFLoader();
 loader.load(
   model,
   (gltf) => {
-    const scale = 0.7;
-    iphone = gltf.scene;
+    const scale = 5.7;
+    iphone = gltf.scene.children[0];
     iphone.scale.set(scale, scale, scale);
-    iphone.rotation.set(0, 0, 0);
-    iphone.position.set(-0.5, -0.5, 0.2);
+    iphone.rotation.set(0, -1.6, 0);
+    position = iphone.position.set(0.3, -0.5, 0.2);
     iphone.castShadow = true;
     scene.add(iphone);
     console.log(iphone);
@@ -43,7 +42,6 @@ const sizes = {
 
 const aspectRatio = computed(() => sizes.width / sizes.height);
 const scene = new THREE.Scene();
-scene.add(gridHelper);
 
 let controls: OrbitControls;
 
@@ -60,14 +58,10 @@ const updateCamera = () => {
 watch(aspectRatio, updateRenderer);
 watch(aspectRatio, updateCamera);
 
-const light = new THREE.PointLight(0xf73aa9, 5, 2000);
+const light = new THREE.SpotLight(0x404040);
 light.position.set(-2, 0, 2);
-const helper = new THREE.PointLightHelper(light, 5);
-scene.add(light, helper);
 
-const secondLight = new THREE.PointLight(0x3d85c6, 5, 2000);
-secondLight.position.set(2, 0, 2);
-scene.add(secondLight);
+scene.add(light);
 
 const camera = new THREE.PerspectiveCamera(45, aspectRatio.value, 0.1, 100);
 camera.position.z = 2;
@@ -88,6 +82,7 @@ window.addEventListener("resize", onWindowResize, false);
 
 const animate = () => {
   requestAnimationFrame(animate);
+  iphone.rotation.y += 0.001;
 
   render();
 };
@@ -96,6 +91,7 @@ onMounted(() => {
   renderer.value = new THREE.WebGLRenderer({
     canvas: experience.value as unknown as HTMLCanvasElement,
     antialias: true,
+    alpha: true,
   });
   controls = new OrbitControls(camera, renderer.value.domElement);
   controls.enableDamping = true;
@@ -103,13 +99,39 @@ onMounted(() => {
   updateRenderer();
   updateCamera();
   render();
-
   animate();
 });
 </script>
 
 <template>
-  <canvas ref="experience" />
+  <canvas ref="experience"> </canvas>
+  <section>
+    <h2>
+      Aurora <br />
+      Jewellery
+    </h2>
+  </section>
+  <section></section>
+  <section></section>
 </template>
 
-<style scoped></style>
+<style scoped>
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+section {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: #ffeded;
+  text-transform: uppercase;
+  font-size: 7vmin;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+</style>
